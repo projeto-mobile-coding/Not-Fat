@@ -32,3 +32,10 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
    ```
 
 # Bibliotecas utilizadas para o inicio do projeto:
+
+1. **Biblioteca de icones do Expo**
+
+   ```bash
+
+   @expo/vector-icons
+   ```
