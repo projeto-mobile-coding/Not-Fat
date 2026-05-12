@@ -40,6 +40,23 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
    @expo/vector-icons
    ```
 
+2. **Navegação entre telas**
+
+   ```bash
+
+   npm install @react-navigation/native @react-navigation/native-stack
+   ```
+
+   ```bash
+
+   npx expo install react-native-screens react-native-safe-area-context
+   ```
+
+   ```bash
+
+   npm install @react-navigation/bottom-tabs
+   ```
+
 # Ícones
 
 1. **Perfil**
