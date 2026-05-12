@@ -39,3 +39,100 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
 
    @expo/vector-icons
    ```
+
+# Ícones
+
+1. **Perfil**
+
+   ```bash
+   import Ionicons from "@expo/vector-icons/Ionicons";
+   ```
+
+   ```bash
+
+   <Ionicons name="person-outline" size={24} color="black" />
+   ```
+
+2. **Maçã**
+
+   ```bash
+
+   import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+   ```
+
+   ```bash
+
+   <MaterialCommunityIcons name="food-apple-outline" size={24} color="black"/>
+   ```
+
+3. **Mais**
+
+   ```bash
+
+   import Feather from "@expo/vector-icons/Feather";
+   ```
+
+   ```bash
+
+   <Feather name="plus" size={24} color="black" />
+   ```
+
+4. **Seta**
+
+   ```bash
+
+   import Feather from "@expo/vector-icons/Feather";
+   ```
+
+   ```bash
+
+   <Feather name="arrow-left" size={24} color="black" />
+   ```
+
+5. **Lupa**
+
+   ```bash
+
+   import EvilIcons from "@expo/vector-icons/EvilIcons";
+   ```
+
+   ```bash
+
+   <EvilIcons name="search" size={24} color="black" />
+   ```
+
+6. **Maior que**
+
+   ```bash
+
+   import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+   ```
+
+   ```bash
+
+   <MaterialIcons name="arrow-forward-ios" size={24} color="black" />
+   ```
+
+7. **Lápis**
+
+   ```bash
+
+   import EvilIcons from '@expo/vector-icons/EvilIcons';
+   ```
+
+   ```bash
+
+   <EvilIcons name="pencil" size={24} color="black" />
+   ```
+
+8. **Menos**
+
+   ```bash
+
+   import AntDesign from '@expo/vector-icons/AntDesign';
+   ```
+
+   ```bash
+
+   <AntDesign name="minus" size={24} color="black" />
+   ```
