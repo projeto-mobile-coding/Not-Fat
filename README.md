@@ -10,6 +10,12 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
    npm install -g expo-cli
    ```
 
+   **Caso não funcione**
+
+   ```bash
+   npm install
+   ```
+
 2. **Criar um novo projeto:**
 
    ```bash
@@ -54,7 +60,7 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
 
    ```bash
 
-   npm install @react-navigation/bottom-tabs
+   expo install @react-navigation/bottom-tabs
    ```
 
 # Ícones
