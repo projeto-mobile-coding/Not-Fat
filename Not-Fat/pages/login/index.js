@@ -8,7 +8,7 @@ import {
   StatusBar,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { styles, AVATAR_SIZE } from "./LoginScreen.styles";
+import { styles, AVATAR_SIZE } from "./style";
 
 const GoogleIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -41,10 +41,10 @@ export default function LoginScreen({ onLogin }) {
 
       <View style={styles.center}>
         <Image
-          source={require("../../assets/images/Logo-Not-Fat.png")}
-          style={styles.avatarImage}
-          resizeMode="contain"
-        />
+            style={styles.avatarImage}
+            resizeMode="cover"
+            source={require("../../assets/images/splash-logo.png")}
+          />
 
         <View style={{ height: 40 }} />
 

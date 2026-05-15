@@ -1,13 +1,13 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import Refeicao from "./pages/refeicao";
+import { useState } from "react";
+import LoginScreen from "./pages/login/index";
+import DiarioScreen from "./pages/refeicao";
 
 export default function App() {
-  return (
-    <View>
-      <Refeicao />
-      <StatusBar style="light" />
-    </View>
-  );
+  const [logado, setLogado] = useState(false);
+
+  if (!logado) {
+    return <LoginScreen onLogin={() => setLogado(true)} />;
+  }
+
+  return <DiarioScreen />;
 }
