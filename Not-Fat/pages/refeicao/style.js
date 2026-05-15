@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: colors.background,
-    marginTop: 120,
+    marginTop: 100,
     paddingHorizontal: 20,
   },
   title: {
@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingLeft: 15,
 
-    marginBottom: 60,
+    marginBottom: 30,
   },
   subTitle: {
     color: colors.textSecondary,

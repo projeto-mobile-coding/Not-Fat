@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Refeicao from "../pages/refeicao";
@@ -17,7 +18,6 @@ export function Routes() {
         tabBarInactiveTintColor: "#000",
         headerShown: false,
         tabBarShowLabel: false,
-        // left: 20,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: colors.primary,
@@ -27,6 +27,15 @@ export function Routes() {
           right: 20,
           borderRadius: 40,
           elevation: 0,
+          height: 70,
+          paddingTop: 10,
+          paddingBottom: 20,
+          overflow: "visible",
+          marginLeft: 70,
+          marginRight: 70,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -38,19 +47,37 @@ export function Routes() {
           tabBarIcon: ({ color, size, focused }) => {
             if (focused) {
               return (
-                <MaterialCommunityIcons
-                  name="food-apple-outline"
-                  size={size}
-                  color={color}
-                />
+                <View
+                  style={{
+                    width: 70,
+                    height: 70,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="food-apple-outline"
+                    size={40}
+                    color={color}
+                  />
+                </View>
               );
             }
             return (
-              <MaterialCommunityIcons
-                name="food-apple-outline"
-                size={size}
-                color={color}
-              />
+              <View
+                style={{
+                  width: 70,
+                  height: 70,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="food-apple-outline"
+                  size={35}
+                  color={color}
+                />
+              </View>
             );
           },
         }}
@@ -64,10 +91,30 @@ export function Routes() {
           tabBarIcon: ({ color, size, focused }) => {
             if (focused) {
               return (
-                <Ionicons name="person-outline" size={size} color={color} />
+                <View
+                  style={{
+                    width: 70,
+                    height: 70,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Ionicons name="person-outline" size={39} color={color} />
+                </View>
               );
             }
-            return <Ionicons name="person-outline" size={size} color={color} />;
+            return (
+              <View
+                style={{
+                  width: 70,
+                  height: 70,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="person-outline" size={35} color={color} />
+              </View>
+            );
           },
         }}
       />

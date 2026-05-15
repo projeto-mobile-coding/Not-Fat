@@ -18,11 +18,11 @@ export const styles = StyleSheet.create({
   buttonText: {
     color: colors.text,
     fontWeight: "500",
-    fontSize: 18,
+    fontSize: 20,
   },
   buttonPrimary: {
     backgroundColor: colors.cardBackground,
-    margin: 10,
+    margin: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
