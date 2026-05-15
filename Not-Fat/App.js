@@ -5,11 +5,19 @@ import { Routes } from "./src/routes";
 import DiarioScreen from "./pages/refeicao";
 
 export default function App() {
-  const [logado, setLogado] = useState(false);
+  return (
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Routes />
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
 
-  if (!logado) {
-    return <LoginScreen onLogin={() => setLogado(true)} />;
-  }
+  // const [logado, setLogado] = useState(false);
 
-  return <DiarioScreen />;
+  // if (!logado) {
+  //   return <LoginScreen onLogin={() => setLogado(true)} />;
+  // }
+
+  // return <DiarioScreen />;
 }
