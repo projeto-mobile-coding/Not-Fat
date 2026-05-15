@@ -22,10 +22,11 @@ export default function Refeicao() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <StatusBar style="light" />
+
           <View>
             <Text style={styles.title}>Refeições</Text>
 
-            <View /* Ficará o espaço para as refeições */>
+            <View>
               {refeicaoNome.map((refeicao) => (
                 <Botao variant="primary" key={refeicao.nome}>
                   {refeicao.nome}

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import LoginScreen from "./pages/login/index";
+import LoginScreen from "./pages/Login";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Routes } from "./src/routes";
-import DiarioScreen from "./pages/refeicao";
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   return (

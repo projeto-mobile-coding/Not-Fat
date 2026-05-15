@@ -3,8 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Refeicao from "../pages/refeicao";
 import Perfil from "../pages/perfil";
-import { colors } from "./styles/colors";
+import LoginScreen from "../pages/Login";
 
+import { colors } from "./styles/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -85,7 +86,7 @@ export function Routes() {
 
       <Tab.Screen
         name="  "
-        component={Perfil}
+        component={LoginScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
