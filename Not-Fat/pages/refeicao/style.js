@@ -12,14 +12,15 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: colors.background,
-    marginTop: 20,
+    marginTop: 120,
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
-    marginTop: 60,
-    marginBottom: 20,
+    paddingLeft: 15,
+
+    marginBottom: 60,
   },
   subTitle: {
     color: colors.textSecondary,

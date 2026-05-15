@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity } from "react-native";
-import { styles } from "../style";
+import { styles } from "./style";
 
 export function Botao({ variant = "primary", onPress, children }) {
   return (
