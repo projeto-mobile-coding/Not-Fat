@@ -1,16 +1,15 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { useState } from "react";
+import LoginScreen from "./pages/login/index";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Routes } from "./src/routes";
-import Refeicao from "./pages/refeicao";
+import DiarioScreen from "./pages/refeicao";
 
 export default function App() {
-  return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Routes />
-      </NavigationContainer>
-    </SafeAreaProvider>
-  );
+  const [logado, setLogado] = useState(false);
+
+  if (!logado) {
+    return <LoginScreen onLogin={() => setLogado(true)} />;
+  }
+
+  return <DiarioScreen />;
 }
