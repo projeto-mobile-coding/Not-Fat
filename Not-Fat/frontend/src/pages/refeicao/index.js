@@ -9,9 +9,9 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import { refeicaoNome } from "../../src/constantes/refeicao-nome";
+import { refeicaoNome } from "../../constantes/refeicao-nome";
 import { styles } from "./style";
-import { Botao } from "../../src/components/botao";
+import { Botao } from "../../components/botao";
 
 export default function Refeicao() {
   return (

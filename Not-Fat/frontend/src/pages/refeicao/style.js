@@ -1,25 +1,26 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../src/styles/colors";
+import { colors } from "../../styles/colors";
 
 export const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    backgroundColor: "red",
-    color: colors.text,
+    flex: 1,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flexGrow: 1,
   },
-  container: {
+  content: {
     flex: 1,
     backgroundColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
+    marginTop: 100,
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 20,
+    paddingLeft: 15,
+
+    marginBottom: 30,
   },
   subTitle: {
     color: colors.textSecondary,

@@ -9,7 +9,7 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import { refeicaoNome } from "../../src/constantes/refeicao-nome";
+import { refeicaoNome } from "../../constantes//refeicao-nome";
 import { styles } from "./style";
 
 export default function Refeicao() {
