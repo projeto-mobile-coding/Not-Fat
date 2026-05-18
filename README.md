@@ -4,6 +4,8 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
 
 ### Passo a passo para criar o projeto
 
+## Front-End
+
 1. **Instalar o Expo CLI (linha de comando):**
 
    ```bash
@@ -37,7 +39,7 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
    npx expo start
    ```
 
-# Bibliotecas utilizadas para o inicio do projeto:
+# Bibliotecas utilizadas no Front-End:
 
 1. **Biblioteca de icones do Expo**
 
@@ -158,4 +160,25 @@ Aplicativo nutricional, com a finalidade de planejar e monitorar as refeições 
    ```bash
 
    <AntDesign name="minus" size={24} color="black" />
+   ```
+
+## Back-End
+
+1. **Entrando na pasta da API**
+   ```bash
+
+   mkdir api-google
+   ```
+
+# Bibliotecas utilizadas no Back-End:
+
+1. **Instalado a base das informarções da API**
+   ```bash
+
+   npm init -y
+   ```
+
+2. **Será instaldo: express, para o servidor; passport, para autenticação; passaport-google-oauth20, estrategia para o passport; express-session, para gerencia as senções do usuário; dotenv, para gerenciar a variavel de ambiente**
+   ```bash
+   npm install express passport passport-google-oauth20 express-session dotenv
    ```
