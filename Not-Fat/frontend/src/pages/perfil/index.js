@@ -36,7 +36,9 @@ export default function Refeicao() {
                   <Text style={styles.subTitle}>Nome Completo</Text>
                   <Text style={styles.text}>Lula&Bolso</Text>
                 </View>
-                <EvilIcons name="pencil" style={styles.icon} />
+                <TouchableOpacity>
+                  <EvilIcons name="pencil" style={styles.icon} />
+                </TouchableOpacity>
               </View>
               <View style={styles.cardEmail}>
                 <Text style={styles.subTitle}>E-mail</Text>
