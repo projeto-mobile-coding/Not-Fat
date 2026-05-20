@@ -8,26 +8,39 @@ import {
   View,
   ScrollView,
   Platform,
+  Image,
 } from "react-native";
 import { refeicaoNome } from "../../constantes//refeicao-nome";
 import { styles } from "./style";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 export default function Refeicao() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <StatusBar style="light" />
+        <View>
+          <StatusBar style="auto" />
           <View>
-            <Text> Área inicial</Text>
-            <Text>Local das refeições</Text>
-            <View>
-              <Text>Início</Text>
+            <View style={styles.content}>
+              <Image
+                source={require("../../assets/images/splash-logo.png")}
+                style={styles.profileImage}
+              ></Image>
+              <Text style={styles.title}>Lula & Bolsonaro</Text>
             </View>
+            <View style={styles.listra} />
             <View>
-              <Text>Refeições</Text>
-              <View /* Ficará o espaço para as refeições */>
-                {/* {refeicaoNome.map(refeicao) => ()} */}
+              <Text style={styles.title}>Dados pessoais</Text>
+              <View style={styles.cardName}>
+                <View>
+                  <Text style={styles.subTitle}>Nome Completo</Text>
+                  <Text style={styles.text}>Lula&Bolso</Text>
+                </View>
+                <EvilIcons name="pencil" style={styles.icon} />
+              </View>
+              <View style={styles.cardEmail}>
+                <Text style={styles.subTitle}>E-mail</Text>
+                <Text style={styles.text}>user123@gmail.com</Text>
               </View>
             </View>
           </View>

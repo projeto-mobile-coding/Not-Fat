@@ -86,7 +86,7 @@ export function Routes() {
 
       <Tab.Screen
         name="  "
-        component={LoginScreen}
+        component={Perfil}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
