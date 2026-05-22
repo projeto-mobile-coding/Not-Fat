@@ -1,6 +1,13 @@
 require ('dotenv').config();
+const express = require('express');
+const cors = require('cors');
 const mysql = require('mysql2/promise');
 const fs = require('fs');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 const pool = mysql.createPool ({
     host: process.env.db_host,
@@ -13,15 +20,30 @@ const pool = mysql.createPool ({
     }
 });
 
-async function buscarTodosOsUsuarios() {
+app.post('/login', async (req, res) => {
     try {
-        console.log("Buscando todos os usuários")
-        const [rows] = await pool.query("SELECT * FROM usuario");
-        console.log(rows);
-    } catch {
-        console.log("Erro de conexão com o banco de dados")
+        const { nome_completo, email } = req.body;
+
+        const [usuarios] = await pool.query('SELECT id FROM usuario WHERE email = ?', [email]);
+
+        if (usuarios.length > 0) {
+            return res.json({ idUsuario: usuarios[0].id });
+
+        } else {
+            const [novoUsuario] =  await pool.query('INSERT INTO usuario (nome_completo, email) VALUES (?, ?)', [nome_completo, email]);
+            return res.json({ idUsuario: novoUsuario.insertId });
+        }
+
+    } catch (err) {
+        return res.status(500).json({ erro: err.message });
     }
-}
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor do app Not Fat rodando na porta ${PORT} 🚀`);
+});
+
 
 async function buscarRefeicaoDoUsuario(idUsuario, idRefeicao) {
     try {
@@ -53,7 +75,3 @@ async function buscarRefeicaoDoUsuario(idUsuario, idRefeicao) {
         console.log("Erro ao buscar dados no banco: ", err.message);
     }
 }
-
-// Testando com o Usuário 1 e Refeição 3
-buscarRefeicaoDoUsuario(1, 3);
-buscarRefeicaoDoUsuario(2, 3);
