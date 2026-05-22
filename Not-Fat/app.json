@@ -1,12 +1,20 @@
 {
   "expo": {
-    "name": "",
+    "name": "Not-Fat",
     "slug": "Not-Fat",
     "version": "1.0.0",
+    "package": "com.googleauth.notfat",
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ]
+    ],
     "orientation": "portrait",
-    // "icon": "./assets/images/splash-logo.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./frontend/src/assets/images/splash-logo.png",
       "resizeMode": "native",
@@ -17,13 +25,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        // "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "bundleIdentifier": "com.googleauth.notfat"
     },
-    "web": {
-      // "favicon": "./assets/favicon.png"
-    }
+    "web": {}
   }
 }

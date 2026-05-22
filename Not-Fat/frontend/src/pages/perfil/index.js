@@ -10,11 +10,10 @@ import {
   Platform,
   Image,
 } from "react-native";
-import { refeicaoNome } from "../../constantes//refeicao-nome";
 import { styles } from "./style";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 
-export default function Refeicao() {
+export default function Perfil() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
