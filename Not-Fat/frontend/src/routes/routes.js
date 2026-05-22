@@ -1,24 +1,26 @@
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import Refeicao from "./pages/refeicao";
-import Perfil from "./pages/perfil";
-import LoginScreen from "./pages/Login";
+import Refeicao from "../pages/refeicao";
+import Perfil from "../pages/perfil";
+import LoginScreen from "../pages/Login";
 
-import { colors } from "./styles/colors";
+import { colors } from "../styles/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { styles } from "./style";
 
 const Tab = createBottomTabNavigator();
 
 export function Routes() {
   return (
     <Tab.Navigator
+      style={styles.screenOptions}
       screenOptions={{
-        tabBarActiveTintColor: "#FFB703",
-        tabBarInactiveTintColor: "#000",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: "white",
         headerShown: false,
-        tabBarShowLabel: false,
+        // tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: colors.primary,
@@ -35,25 +37,37 @@ export function Routes() {
           marginLeft: 70,
           marginRight: 70,
         },
+
+        tabBarLabelStyle: {
+          fontSize: 12,
+          marginTop: -5,
+        },
+
         tabBarIconStyle: {
-          marginTop: 4,
+          marginTop: 6,
+          marginBottom: 2,
         },
       }}
     >
       <Tab.Screen
-        name=" "
+        name="Refeições"
         component={Refeicao}
         options={{
           headerShown: false,
+
           tabBarIcon: ({ color, size, focused }) => {
             if (focused) {
               return (
                 <View
                   style={{
-                    width: 70,
-                    height: 70,
+                    backgroundColor: "white",
+                    borderRadius: 30,
+                    width: 80,
+                    height: 60,
                     justifyContent: "center",
                     alignItems: "center",
+                    paddingBottom: 15,
+                    // margin: 10,
                   }}
                 >
                   <MaterialCommunityIcons
@@ -67,10 +81,11 @@ export function Routes() {
             return (
               <View
                 style={{
-                  width: 70,
-                  height: 70,
+                  width: 80,
+                  height: 60,
                   justifyContent: "center",
                   alignItems: "center",
+                  paddingBottom: 10,
                 }}
               >
                 <MaterialCommunityIcons
@@ -85,8 +100,8 @@ export function Routes() {
       />
 
       <Tab.Screen
-        name="  "
-        component={LoginScreen}
+        name="Perfil"
+        component={Perfil}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
@@ -94,10 +109,13 @@ export function Routes() {
               return (
                 <View
                   style={{
-                    width: 70,
-                    height: 70,
+                    backgroundColor: "white",
+                    borderRadius: 30,
+                    width: 80,
+                    height: 60,
                     justifyContent: "center",
                     alignItems: "center",
+                    paddingBottom: 10,
                   }}
                 >
                   <Ionicons name="person-outline" size={39} color={color} />
@@ -107,10 +125,11 @@ export function Routes() {
             return (
               <View
                 style={{
-                  width: 70,
-                  height: 70,
+                  width: 80,
+                  height: 60,
                   justifyContent: "center",
                   alignItems: "center",
+                  paddingBottom: 10,
                 }}
               >
                 <Ionicons name="person-outline" size={35} color={color} />
