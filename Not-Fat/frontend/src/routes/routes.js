@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Refeicao from "../pages/refeicao";
 import Perfil from "../pages/perfil";
 import LoginScreen from "../pages/Login";
+import Modal from "../components/modalPerfil";
 
 import { colors } from "../styles/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
