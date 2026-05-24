@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   KeyboardAvoidingView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   ScrollView,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { refeicaoNome } from "../../constantes/refeicao-nome";
 import { styles } from "./style";
 import { Botao } from "../../components/botao";
 
-export default function Refeicao() {
+export default function Refeicao({ navigation }) {
+  const [mealFoods, setMealFoods] = useState(
+    Object.fromEntries(refeicaoNome.map((r) => [r.nome, []])),
+  );
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
