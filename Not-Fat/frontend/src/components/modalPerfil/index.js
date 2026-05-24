@@ -41,7 +41,7 @@ export default function ModalPerfil({
               placeholder="Escreva aqui..."
               placeholderTextColor="#888"
               onChangeText={onChangeNome}
-              value={nomeCompleto}
+              value={null}
             />
             <View style={styles.buttonContainer}>
               <TouchableOpacity

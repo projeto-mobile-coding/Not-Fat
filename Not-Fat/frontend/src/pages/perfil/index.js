@@ -8,7 +8,7 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 export default function Perfil() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [nomeCompleto, setNomeCompleto] = useState("EunSei");
+  const [nomeCompleto, setNomeCompleto] = useState("");
 
   const abrirModal = () => {
     setModalVisible(true);
