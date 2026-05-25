@@ -2,18 +2,23 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   KeyboardAvoidingView,
-  StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ScrollView,
   Platform,
 } from "react-native";
+
 import { refeicaoNome } from "../../constantes/refeicao-nome";
 import { styles } from "./style";
 import { Botao } from "../../components/botao";
 
-export default function Refeicao() {
+export default function Refeicao({ navigation }) {
+  function irParaAlimentos(refeicao) {
+    navigation.navigate("Alimento", {
+      refeicao: refeicao.nome,
+    });
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -28,7 +33,11 @@ export default function Refeicao() {
 
             <View>
               {refeicaoNome.map((refeicao) => (
-                <Botao variant="primary" key={refeicao.nome}>
+                <Botao
+                  variant="primary"
+                  key={refeicao.nome}
+                  onPress={() => irParaAlimentos(refeicao)}
+                >
                   {refeicao.nome}
                 </Botao>
               ))}

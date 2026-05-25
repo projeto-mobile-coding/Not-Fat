@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  Platform,
-  Image,
-} from "react-native";
+import { Text, TouchableOpacity, View, ScrollView, Image } from "react-native";
 import { styles } from "./style";
+
+import ModalPerfil from "../../components/modalPerfil";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 export default function Perfil() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [nomeCompleto, setNomeCompleto] = useState("");
+
+  const abrirModal = () => {
+    setModalVisible(true);
+  };
+
+  const fecharModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -25,7 +29,7 @@ export default function Perfil() {
                 source={require("../../assets/images/splash-logo.png")}
                 style={styles.profileImage}
               ></Image>
-              <Text style={styles.title}>Lula & Bolsonaro</Text>
+              <Text style={styles.title}>{nomeCompleto}</Text>
             </View>
             <View style={styles.listra} />
             <View>
@@ -33,9 +37,9 @@ export default function Perfil() {
               <View style={styles.cardName}>
                 <View>
                   <Text style={styles.subTitle}>Nome Completo</Text>
-                  <Text style={styles.text}>Lula&Bolso</Text>
+                  <Text style={styles.text}>{nomeCompleto}</Text>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={abrirModal}>
                   <EvilIcons name="pencil" style={styles.icon} />
                 </TouchableOpacity>
               </View>
@@ -47,6 +51,13 @@ export default function Perfil() {
           </View>
         </View>
       </ScrollView>
+
+      <ModalPerfil
+        visible={modalVisible}
+        onClose={fecharModal}
+        nomeCompleto={nomeCompleto}
+        onChangeNome={setNomeCompleto}
+      />
     </View>
   );
 }
