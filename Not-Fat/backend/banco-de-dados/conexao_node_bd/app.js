@@ -111,4 +111,11 @@ app.put('/usuario/:idUsuario', async (req, res) => {
     } catch (err) {
         return res.status(500).json({ erro: err.message });
     }
-}
+});
+
+
+// 5. LIGAR O SERVIDOR (Sempre no final do arquivo!)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
