@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Refeicao from "../pages/refeicao";
 import Perfil from "../pages/perfil";
-import LoginScreen from "../pages/Login";
+import Alimento from "../pages/alimento";
 
 import { colors } from "../styles/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -20,7 +20,6 @@ export function Routes() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: "white",
         headerShown: false,
-        // tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: colors.primary,
@@ -37,12 +36,10 @@ export function Routes() {
           marginLeft: 70,
           marginRight: 70,
         },
-
         tabBarLabelStyle: {
           fontSize: 12,
           marginTop: -5,
         },
-
         tabBarIconStyle: {
           marginTop: 6,
           marginBottom: 2,
@@ -54,8 +51,7 @@ export function Routes() {
         component={Refeicao}
         options={{
           headerShown: false,
-
-          tabBarIcon: ({ color, size, focused }) => {
+          tabBarIcon: ({ color, focused }) => {
             if (focused) {
               return (
                 <View
@@ -67,7 +63,6 @@ export function Routes() {
                     justifyContent: "center",
                     alignItems: "center",
                     paddingBottom: 15,
-                    // margin: 10,
                   }}
                 >
                   <MaterialCommunityIcons
@@ -78,6 +73,7 @@ export function Routes() {
                 </View>
               );
             }
+
             return (
               <View
                 style={{
@@ -104,7 +100,7 @@ export function Routes() {
         component={Perfil}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, size, focused }) => {
+          tabBarIcon: ({ color, focused }) => {
             if (focused) {
               return (
                 <View
@@ -122,6 +118,7 @@ export function Routes() {
                 </View>
               );
             }
+
             return (
               <View
                 style={{
@@ -136,6 +133,15 @@ export function Routes() {
               </View>
             );
           },
+        }}
+      />
+
+      <Tab.Screen
+        name="Alimento"
+        component={Alimento}
+        options={{
+          headerShown: false,
+          tabBarButton: () => null,
         }}
       />
     </Tab.Navigator>
