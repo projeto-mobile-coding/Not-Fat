@@ -94,7 +94,14 @@ export function Routes() {
           },
         }}
       />
-
+      <Tab.Screen
+        name="Alimento"
+        component={Alimento}
+        options={{
+          headerShown: false,
+          tabBarButton: () => null,
+        }}
+      />
       <Tab.Screen
         name="Perfil"
         component={Perfil}
@@ -133,15 +140,6 @@ export function Routes() {
               </View>
             );
           },
-        }}
-      />
-
-      <Tab.Screen
-        name="Alimento"
-        component={Alimento}
-        options={{
-          headerShown: false,
-          tabBarButton: () => null,
         }}
       />
     </Tab.Navigator>

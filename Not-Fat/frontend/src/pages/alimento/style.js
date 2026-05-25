@@ -107,6 +107,25 @@ export const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
+  removeButton: {
+    backgroundColor: "#fee2e2",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+
+  removeButtonText: {
+    color: "#b91c1c",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+
+  emptyText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    marginTop: 8,
+  },
+
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
@@ -194,6 +213,18 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: -2,
+  },
+
+  quantitySelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
+  quantityText: {
+    color: colors.text,
+    fontWeight: "bold",
+    fontSize: 14,
   },
 
   confirmButton: {
