@@ -6,17 +6,14 @@ import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   // return (
-  //     <NavigationContainer>
-  //       <Routes />
-  //     </NavigationContainer>
+  //   <NavigationContainer>
+  //     <Routes />
+  //   </NavigationContainer>
   // );
-
   const [logado, setLogado] = useState(false);
-
   if (!logado) {
     return <LoginScreen onLogin={() => setLogado(true)} />;
   }
-
   return (
     <NavigationContainer>
       <Routes />
