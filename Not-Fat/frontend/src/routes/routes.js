@@ -1,9 +1,11 @@
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Refeicao from "../pages/refeicao";
 import Perfil from "../pages/perfil";
 import LoginScreen from "../pages/Login";
+import Alimento from "../pages/alimento";
 
 import { colors } from "../styles/colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -11,8 +13,9 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { styles } from "./style";
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export function Routes() {
+function Tabs() {
   return (
     <Tab.Navigator
       style={styles.screenOptions}
@@ -20,7 +23,6 @@ export function Routes() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: "white",
         headerShown: false,
-        // tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: colors.primary,
@@ -67,7 +69,6 @@ export function Routes() {
                     justifyContent: "center",
                     alignItems: "center",
                     paddingBottom: 15,
-                    // margin: 10,
                   }}
                 >
                   <MaterialCommunityIcons
@@ -78,6 +79,7 @@ export function Routes() {
                 </View>
               );
             }
+
             return (
               <View
                 style={{
@@ -122,6 +124,7 @@ export function Routes() {
                 </View>
               );
             }
+
             return (
               <View
                 style={{
@@ -139,5 +142,14 @@ export function Routes() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+export function Routes() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={Tabs} />
+      <Stack.Screen name="Alimento" component={Alimento} />
+    </Stack.Navigator>
   );
 }
