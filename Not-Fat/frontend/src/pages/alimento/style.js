@@ -215,6 +215,22 @@ export const styles = StyleSheet.create({
     marginTop: -2,
   },
 
+  minusButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#eeeeee",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  minusButtonText: {
+    color: "#555",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: -2,
+  },
+
   quantitySelector: {
     flexDirection: "row",
     alignItems: "center",

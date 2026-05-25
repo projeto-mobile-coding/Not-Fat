@@ -1,8 +1,10 @@
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Refeicao from "../pages/refeicao";
 import Perfil from "../pages/perfil";
+import LoginScreen from "../pages/Login";
 import Alimento from "../pages/alimento";
 
 import { colors } from "../styles/colors";
@@ -11,8 +13,9 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { styles } from "./style";
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export function Routes() {
+function Tabs() {
   return (
     <Tab.Navigator
       style={styles.screenOptions}
@@ -36,10 +39,12 @@ export function Routes() {
           marginLeft: 70,
           marginRight: 70,
         },
+
         tabBarLabelStyle: {
           fontSize: 12,
           marginTop: -5,
         },
+
         tabBarIconStyle: {
           marginTop: 6,
           marginBottom: 2,
@@ -51,7 +56,8 @@ export function Routes() {
         component={Refeicao}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => {
+
+          tabBarIcon: ({ color, size, focused }) => {
             if (focused) {
               return (
                 <View
@@ -94,20 +100,13 @@ export function Routes() {
           },
         }}
       />
-      <Tab.Screen
-        name="Alimento"
-        component={Alimento}
-        options={{
-          headerShown: false,
-          tabBarButton: () => null,
-        }}
-      />
+
       <Tab.Screen
         name="Perfil"
         component={Perfil}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => {
+          tabBarIcon: ({ color, size, focused }) => {
             if (focused) {
               return (
                 <View
@@ -143,5 +142,14 @@ export function Routes() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+export function Routes() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={Tabs} />
+      <Stack.Screen name="Alimento" component={Alimento} />
+    </Stack.Navigator>
   );
 }

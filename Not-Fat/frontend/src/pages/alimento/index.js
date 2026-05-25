@@ -23,11 +23,11 @@ const versoes = {
       { nome: "Frutas", descricao: "1 porção" },
     ],
     alimentosDisponiveis: [
-      { nome: "Pão francês", descricao: "150 kcal / unid." },
-      { nome: "Ovo cozido", descricao: "78 kcal / unid." },
-      { nome: "Café preto", descricao: "2 kcal / ml" },
-      { nome: "Aveia", descricao: "4 kcal / g" },
-      { nome: "Arroz branco", descricao: "130 kcal / 100g" },
+      { nome: "Pão francês", descricao: "1 unidade" },
+      { nome: "Ovo cozido", descricao: "1 unidade" },
+      { nome: "Café preto", descricao: "1 xícara" },
+      { nome: "Aveia", descricao: "1 porção" },
+      { nome: "Arroz branco", descricao: "1 porção" },
     ],
   },
   Desjejum: {
@@ -38,10 +38,10 @@ const versoes = {
       { nome: "Banana", descricao: "1 unidade" },
     ],
     alimentosDisponiveis: [
-      { nome: "Iogurte natural", descricao: "90 kcal / pote" },
-      { nome: "Granola integral", descricao: "120 kcal / colher" },
-      { nome: "Banana prata", descricao: "89 kcal / unid." },
-      { nome: "Muesli", descricao: "110 kcal / porção" },
+      { nome: "Iogurte natural", descricao: "1 pote" },
+      { nome: "Granola integral", descricao: "1 porção" },
+      { nome: "Banana prata", descricao: "1 unidade" },
+      { nome: "Muesli", descricao: "1 porção" },
     ],
   },
   Almoço: {
@@ -53,10 +53,10 @@ const versoes = {
       { nome: "Salada", descricao: "1 prato" },
     ],
     alimentosDisponiveis: [
-      { nome: "Arroz branco", descricao: "130 kcal / 100g" },
-      { nome: "Feijão carioca", descricao: "70 kcal / 100g" },
-      { nome: "Frango grelhado", descricao: "165 kcal / 100g" },
-      { nome: "Salada verde", descricao: "20 kcal / prato" },
+      { nome: "Arroz branco", descricao: "1 porção" },
+      { nome: "Feijão carioca", descricao: "1 porção" },
+      { nome: "Frango grelhado", descricao: "1 porção" },
+      { nome: "Salada verde", descricao: "1 prato" },
     ],
   },
   "lanche da tarde": {
@@ -67,10 +67,10 @@ const versoes = {
       { nome: "Queijo", descricao: "1 fatia" },
     ],
     alimentosDisponiveis: [
-      { nome: "Biscoito cream cracker", descricao: "45 kcal / unid." },
-      { nome: "Suco de laranja", descricao: "60 kcal / copo" },
-      { nome: "Queijo minas", descricao: "100 kcal / fatia" },
-      { nome: "Castanha", descricao: "50 kcal / porção" },
+      { nome: "Biscoito cream cracker", descricao: "1 unidade" },
+      { nome: "Suco de laranja", descricao: "1 copo" },
+      { nome: "Queijo minas", descricao: "1 fatia" },
+      { nome: "Castanha", descricao: "1 porção" },
     ],
   },
   Jantar: {
@@ -81,10 +81,10 @@ const versoes = {
       { nome: "Peixe", descricao: "1 porção" },
     ],
     alimentosDisponiveis: [
-      { nome: "Macarrão integral", descricao: "160 kcal / porção" },
-      { nome: "Tomate cereja", descricao: "5 kcal / unid." },
-      { nome: "Peixe assado", descricao: "140 kcal / porção" },
-      { nome: "Brócolis", descricao: "30 kcal / porção" },
+      { nome: "Macarrão integral", descricao: "1 porção" },
+      { nome: "Tomate cereja", descricao: "1 unidade" },
+      { nome: "Peixe assado", descricao: "1 porção" },
+      { nome: "Brócolis", descricao: "1 porção" },
     ],
   },
   Ceia: {
@@ -95,10 +95,10 @@ const versoes = {
       { nome: "Frutas", descricao: "1 porção" },
     ],
     alimentosDisponiveis: [
-      { nome: "Chá verde", descricao: "2 kcal / xícara" },
-      { nome: "Pão integral", descricao: "80 kcal / fatia" },
-      { nome: "Maçã", descricao: "95 kcal / unid." },
-      { nome: "Mel", descricao: "60 kcal / colher" },
+      { nome: "Chá verde", descricao: "1 xícara" },
+      { nome: "Pão integral", descricao: "1 fatia" },
+      { nome: "Maçã", descricao: "1 unidade" },
+      { nome: "Mel", descricao: "1 colher" },
     ],
   },
 };
@@ -133,6 +133,23 @@ export default function Alimento({ navigation, route }) {
     }));
   }
 
+  function diminuirQuantidade(alimento) {
+    setPendentes((prev) => {
+      const quantidadeAtual = prev[alimento.nome] || 0;
+
+      if (quantidadeAtual <= 1) {
+        const novoPendentes = { ...prev };
+        delete novoPendentes[alimento.nome];
+        return novoPendentes;
+      }
+
+      return {
+        ...prev,
+        [alimento.nome]: quantidadeAtual - 1,
+      };
+    });
+  }
+
   function removerAlimento(alimento) {
     setAlimentosSelecionados((prev) =>
       prev.filter((item) => item.nome !== alimento.nome),
@@ -154,7 +171,7 @@ export default function Alimento({ navigation, route }) {
           (item) => item.nome === nome,
         );
 
-        if (!alimento) {
+        if (!alimento || quantidade <= 0) {
           return;
         }
 
@@ -278,17 +295,22 @@ export default function Alimento({ navigation, route }) {
 
                   <View style={styles.quantitySelector}>
                     <TouchableOpacity
+                      style={styles.minusButton}
+                      onPress={() => diminuirQuantidade(alimento)}
+                    >
+                      <Text style={styles.minusButtonText}>-</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.quantityText}>
+                      x{pendentes[alimento.nome] || 0}
+                    </Text>
+
+                    <TouchableOpacity
                       style={styles.plusButton}
                       onPress={() => incrementarQuantidade(alimento)}
                     >
                       <Text style={styles.plusButtonText}>+</Text>
                     </TouchableOpacity>
-
-                    {pendentes[alimento.nome] ? (
-                      <Text style={styles.quantityText}>
-                        x{pendentes[alimento.nome]}
-                      </Text>
-                    ) : null}
                   </View>
                 </View>
               ))}
