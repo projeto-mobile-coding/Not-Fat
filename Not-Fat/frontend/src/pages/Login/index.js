@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { styles, AVATAR_SIZE } from "./style";
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+
 
 const GoogleIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -45,6 +48,60 @@ const CheckIcon = () => (
 
 export default function LoginScreen({ onLogin }) {
   const [remindMe, setRemindMe] = useState(true);
+
+  async function enviarTokenParaBackend(idToken: string | null) {
+    if (!idToken) return;
+
+    try {
+      // Substitua pela URL real do seu servidor/API
+      const response = await fetch('http://10.0.2.2:3000/backend/google/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: idToken }),
+      });
+
+  const dadosDoBackend = await response.json();
+  
+        if (response.ok) {
+          console.log("Autenticado no Back-end com sucesso!", dadosDoBackend);
+          // Aqui você salvaria o JWT retornado pelo seu back-end (ex: no AsyncStorage)
+          // E mudaria o estado global de login do app (ex: setLogado(true))
+        } else {
+          console.error("Erro retornado pelo Back-end:", dadosDoBackend.message);
+        }
+      } catch (error) {
+        console.error("Erro ao conectar com o Back-end:", error);
+      }
+    }
+  
+    async function handleGoogleSignIn() {
+      setLoading(true);
+      try {
+        await GoogleSignin.hasPlayServices();
+        const response = await GoogleSignin.signIn();
+        
+        if (response && response.data) {
+          setAuth(response.data);
+          
+          // ENVIO PARA O BACK-END: Passa o idToken recebido do Google
+          await enviarTokenParaBackend(response.data.idToken);
+        }
+      } catch (error: any) {
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          console.log("O usuário cancelou o fluxo de login.");
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          console.log("O login já está em andamento.");
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          console.log("Play Services não está disponível ou está desatualizado.");
+        } else {
+          console.log("Erro na autenticação:", error.message || error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
 
   return (
     <SafeAreaView style={styles.safeArea}>
