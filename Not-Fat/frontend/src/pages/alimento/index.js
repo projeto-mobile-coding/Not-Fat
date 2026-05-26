@@ -125,7 +125,7 @@ export default function Alimento({ navigation, route }) {
           dados.map((alimento) => ({
             id: alimento.id,
             nome: alimento.nome,
-            descricao: alimento.descricao || "1 porção",
+            descricao: alimento.descricao || "1 porção / 100g",
           })),
         );
       } catch (erro) {
