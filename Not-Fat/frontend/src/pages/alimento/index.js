@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 import {
   KeyboardAvoidingView,
@@ -13,118 +14,150 @@ import {
 
 import { styles } from "./style";
 
-const versoes = {
-  "Café da manhã": {
-    subTitle: "Lista do café da manhã",
-    alimentos: [
-      { nome: "Pão", descricao: "1 unidade" },
-      { nome: "Ovo", descricao: "1 unidade" },
-      { nome: "Café", descricao: "1 xícara" },
-      { nome: "Frutas", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Pão francês", descricao: "1 unidade" },
-      { nome: "Ovo cozido", descricao: "1 unidade" },
-      { nome: "Café preto", descricao: "1 xícara" },
-      { nome: "Aveia", descricao: "1 porção" },
-      { nome: "Arroz branco", descricao: "1 porção" },
-    ],
-  },
-  Desjejum: {
-    subTitle: "Lista de itens do desjejum",
-    alimentos: [
-      { nome: "Iogurte", descricao: "1 pote" },
-      { nome: "Granola", descricao: "2 colheres" },
-      { nome: "Banana", descricao: "1 unidade" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Iogurte natural", descricao: "1 pote" },
-      { nome: "Granola integral", descricao: "1 porção" },
-      { nome: "Banana prata", descricao: "1 unidade" },
-      { nome: "Muesli", descricao: "1 porção" },
-    ],
-  },
-  Almoço: {
-    subTitle: "Lista do almoço",
-    alimentos: [
-      { nome: "Arroz", descricao: "1 concha" },
-      { nome: "Feijão", descricao: "1 concha" },
-      { nome: "Carne", descricao: "1 porção" },
-      { nome: "Salada", descricao: "1 prato" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Arroz branco", descricao: "1 porção" },
-      { nome: "Feijão carioca", descricao: "1 porção" },
-      { nome: "Frango grelhado", descricao: "1 porção" },
-      { nome: "Salada verde", descricao: "1 prato" },
-    ],
-  },
-  "lanche da tarde": {
-    subTitle: "Lista do lanche da tarde",
-    alimentos: [
-      { nome: "Biscoito", descricao: "3 unidades" },
-      { nome: "Suco", descricao: "1 copo" },
-      { nome: "Queijo", descricao: "1 fatia" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Biscoito cream cracker", descricao: "1 unidade" },
-      { nome: "Suco de laranja", descricao: "1 copo" },
-      { nome: "Queijo minas", descricao: "1 fatia" },
-      { nome: "Castanha", descricao: "1 porção" },
-    ],
-  },
-  Jantar: {
-    subTitle: "Lista do jantar",
-    alimentos: [
-      { nome: "Macarrão", descricao: "1 porção" },
-      { nome: "Tomate", descricao: "1 unidade" },
-      { nome: "Peixe", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Macarrão integral", descricao: "1 porção" },
-      { nome: "Tomate cereja", descricao: "1 unidade" },
-      { nome: "Peixe assado", descricao: "1 porção" },
-      { nome: "Brócolis", descricao: "1 porção" },
-    ],
-  },
-  Ceia: {
-    subTitle: "Lista da ceia",
-    alimentos: [
-      { nome: "Chá", descricao: "1 xícara" },
-      { nome: "Pão integral", descricao: "1 fatia" },
-      { nome: "Frutas", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Chá verde", descricao: "1 xícara" },
-      { nome: "Pão integral", descricao: "1 fatia" },
-      { nome: "Maçã", descricao: "1 unidade" },
-      { nome: "Mel", descricao: "1 colher" },
-    ],
-  },
+const getApiBaseUrl = () => {
+  const envUrl = process.env.EXPO_PUBLIC_API_URL;
+
+  if (envUrl) {
+    return envUrl;
+  }
+
+  return Platform.OS === "android"
+    ? "http://10.0.2.2:3000"
+    : "http://localhost:3000";
+};
+
+const subTitulos = {
+  "Café da manhã": "Lista do café da manhã",
+  Desjejum: "Lista de itens do desjejum",
+  Almoço: "Lista do almoço",
+  "lanche da tarde": "Lista do lanche da tarde",
+  Jantar: "Lista do jantar",
+  Ceia: "Lista da ceia",
 };
 
 export default function Alimento({ navigation, route }) {
   const refeicao = route.params?.refeicao || "Café da manhã";
-  const conteudo = versoes[refeicao] || versoes["Café da manhã"];
+  const subTitle = subTitulos[refeicao] || "Lista de alimentos";
 
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
-  const [alimentosSelecionados, setAlimentosSelecionados] = useState(
-    (versoes[refeicao]?.alimentos || versoes["Café da manhã"].alimentos).map(
-      (alimento) => ({ ...alimento, quantidade: 1 }),
-    ),
-  );
+  const [alimentosSelecionados, setAlimentosSelecionados] = useState([]);
   const [pendentes, setPendentes] = useState({});
+  const [alimentosDisponiveis, setAlimentosDisponiveis] = useState([]);
+  const [carregandoAlimentos, setCarregandoAlimentos] = useState(true);
+  const [erroAlimentos, setErroAlimentos] = useState("");
+  const [selecoesCarregadas, setSelecoesCarregadas] = useState(false);
+  const selecaoFoiEditadaRef = useRef(false);
+  const carregandoSelecoesRef = useRef(false);
+
+  const storageKey = `selected-foods-${refeicao}`;
 
   useEffect(() => {
-    setAlimentosSelecionados(
-      (versoes[refeicao]?.alimentos || versoes["Café da manhã"].alimentos).map(
-        (alimento) => ({ ...alimento, quantidade: 1 }),
-      ),
-    );
     setPendentes({});
     setSearch("");
-  }, [refeicao]);
+    setSelecoesCarregadas(false);
+    selecaoFoiEditadaRef.current = false;
+    carregandoSelecoesRef.current = true;
+
+    let cancelado = false;
+
+    async function carregarSelecionados() {
+      try {
+        const salvo = await AsyncStorage.getItem(storageKey);
+
+        if (cancelado) {
+          return;
+        }
+
+        if (!selecaoFoiEditadaRef.current && salvo) {
+          const selecionadosSalvos = JSON.parse(salvo);
+
+          if (Array.isArray(selecionadosSalvos)) {
+            setAlimentosSelecionados(selecionadosSalvos);
+            setSelecoesCarregadas(true);
+            carregandoSelecoesRef.current = false;
+            return;
+          }
+        }
+
+        if (!selecaoFoiEditadaRef.current) {
+          setAlimentosSelecionados([]);
+        }
+
+        setSelecoesCarregadas(true);
+        carregandoSelecoesRef.current = false;
+      } catch (erro) {
+        if (!cancelado) {
+          setSelecoesCarregadas(true);
+          carregandoSelecoesRef.current = false;
+        }
+      }
+    }
+
+    carregarSelecionados();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [refeicao, storageKey]);
+
+  useEffect(() => {
+    let estaMontado = true;
+
+    async function carregarAlimentos() {
+      setCarregandoAlimentos(true);
+      setErroAlimentos("");
+
+      try {
+        const resposta = await fetch(`${getApiBaseUrl()}/alimentos`);
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível buscar os alimentos.");
+        }
+
+        const dados = await resposta.json();
+
+        if (!estaMontado) {
+          return;
+        }
+
+        setAlimentosDisponiveis(
+          dados.map((alimento) => ({
+            id: alimento.id,
+            nome: alimento.nome,
+            descricao: alimento.descricao || "1 porção",
+          })),
+        );
+      } catch (erro) {
+        if (!estaMontado) {
+          return;
+        }
+
+        setErroAlimentos("Não foi possível carregar os alimentos do backend.");
+      } finally {
+        if (estaMontado) {
+          setCarregandoAlimentos(false);
+        }
+      }
+    }
+
+    carregarAlimentos();
+
+    return () => {
+      estaMontado = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selecoesCarregadas || carregandoSelecoesRef.current) {
+      return;
+    }
+
+    AsyncStorage.setItem(
+      storageKey,
+      JSON.stringify(alimentosSelecionados),
+    ).catch(() => {});
+  }, [alimentosSelecionados, selecoesCarregadas, storageKey]);
 
   function incrementarQuantidade(alimento) {
     setPendentes((prev) => ({
@@ -151,6 +184,7 @@ export default function Alimento({ navigation, route }) {
   }
 
   function removerAlimento(alimento) {
+    selecaoFoiEditadaRef.current = true;
     setAlimentosSelecionados((prev) =>
       prev.filter((item) => item.nome !== alimento.nome),
     );
@@ -163,28 +197,30 @@ export default function Alimento({ navigation, route }) {
   }
 
   function confirmarAdicao() {
+    selecaoFoiEditadaRef.current = true;
     setAlimentosSelecionados((prev) => {
       const selecionados = [...prev];
 
       Object.entries(pendentes).forEach(([nome, quantidade]) => {
-        const alimento = conteudo.alimentosDisponiveis.find(
+        const alimento = alimentosDisponiveis.find(
           (item) => item.nome === nome,
         );
+        const quantidadeNumerica = Number(quantidade);
 
-        if (!alimento || quantidade <= 0) {
+        if (!alimento || quantidadeNumerica <= 0) {
           return;
         }
 
         const existente = selecionados.find((item) => item.nome === nome);
 
         if (existente) {
-          existente.quantidade += quantidade;
+          existente.quantidade += quantidadeNumerica;
           return;
         }
 
         selecionados.push({
           ...alimento,
-          quantidade,
+          quantidade: quantidadeNumerica,
         });
       });
 
@@ -194,7 +230,7 @@ export default function Alimento({ navigation, route }) {
     fecharModal();
   }
 
-  const alimentosFiltrados = conteudo.alimentosDisponiveis.filter((alimento) =>
+  const alimentosFiltrados = alimentosDisponiveis.filter((alimento) =>
     alimento.nome.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -217,7 +253,7 @@ export default function Alimento({ navigation, route }) {
 
             <View>
               <Text style={styles.title}>{refeicao}</Text>
-              <Text style={styles.subTitle}>{conteudo.subTitle}</Text>
+              <Text style={styles.subTitle}>{subTitle}</Text>
             </View>
           </View>
 
@@ -284,42 +320,57 @@ export default function Alimento({ navigation, route }) {
             />
 
             <ScrollView style={styles.modalList}>
-              {alimentosFiltrados.map((alimento) => (
-                <View style={styles.modalFoodItem} key={alimento.nome}>
-                  <View>
-                    <Text style={styles.modalFoodName}>{alimento.nome}</Text>
-                    <Text style={styles.modalFoodDescription}>
-                      {alimento.descricao}
-                    </Text>
-                  </View>
-
-                  <View style={styles.quantitySelector}>
-                    <TouchableOpacity
-                      style={styles.minusButton}
-                      onPress={() => diminuirQuantidade(alimento)}
-                    >
-                      <Text style={styles.minusButtonText}>-</Text>
-                    </TouchableOpacity>
-
-                    <Text style={styles.quantityText}>
-                      x{pendentes[alimento.nome] || 0}
-                    </Text>
-
-                    <TouchableOpacity
-                      style={styles.plusButton}
-                      onPress={() => incrementarQuantidade(alimento)}
-                    >
-                      <Text style={styles.plusButtonText}>+</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-
-              {alimentosFiltrados.length === 0 && (
-                <Text style={styles.emptyText}>
-                  Nenhum alimento encontrado.
-                </Text>
+              {carregandoAlimentos && (
+                <Text style={styles.emptyText}>Carregando alimentos...</Text>
               )}
+
+              {!carregandoAlimentos && erroAlimentos && (
+                <Text style={styles.emptyText}>{erroAlimentos}</Text>
+              )}
+
+              {!carregandoAlimentos &&
+                !erroAlimentos &&
+                alimentosFiltrados.map((alimento) => (
+                  <View
+                    style={styles.modalFoodItem}
+                    key={alimento.id ?? alimento.nome}
+                  >
+                    <View>
+                      <Text style={styles.modalFoodName}>{alimento.nome}</Text>
+                      <Text style={styles.modalFoodDescription}>
+                        {alimento.descricao}
+                      </Text>
+                    </View>
+
+                    <View style={styles.quantitySelector}>
+                      <TouchableOpacity
+                        style={styles.minusButton}
+                        onPress={() => diminuirQuantidade(alimento)}
+                      >
+                        <Text style={styles.minusButtonText}>-</Text>
+                      </TouchableOpacity>
+
+                      <Text style={styles.quantityText}>
+                        x{pendentes[alimento.nome] || 0}
+                      </Text>
+
+                      <TouchableOpacity
+                        style={styles.plusButton}
+                        onPress={() => incrementarQuantidade(alimento)}
+                      >
+                        <Text style={styles.plusButtonText}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+
+              {!carregandoAlimentos &&
+                !erroAlimentos &&
+                alimentosFiltrados.length === 0 && (
+                  <Text style={styles.emptyText}>
+                    Nenhum alimento encontrado.
+                  </Text>
+                )}
             </ScrollView>
 
             <TouchableOpacity

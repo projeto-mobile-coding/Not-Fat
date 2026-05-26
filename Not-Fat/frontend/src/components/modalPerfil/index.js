@@ -8,12 +8,9 @@ export default function ModalPerfil({
   onClose,
   nomeCompleto,
   onChangeNome,
+  onSave,
+  salvando = false,
 }) {
-  const lidarComEnvio = () => {
-    alert(`Texto preenchido: ${nomeCompleto}`);
-    fecharModal();
-  };
-
   const fecharModal = () => {
     onClose?.();
   };
@@ -41,20 +38,25 @@ export default function ModalPerfil({
               placeholder="Escreva aqui..."
               placeholderTextColor="#888"
               onChangeText={onChangeNome}
-              value={null}
+              value={nomeCompleto}
+              editable={!salvando}
             />
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.buttonCancel}
                 onPress={fecharModal}
+                disabled={salvando}
               >
                 <Text style={styles.buttonCancelText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonSave}
-                onPress={lidarComEnvio}
+                onPress={onSave}
+                disabled={salvando}
               >
-                <Text style={styles.buttonSaveText}>Salvar</Text>
+                <Text style={styles.buttonSaveText}>
+                  {salvando ? "Salvando..." : "Salvar"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
