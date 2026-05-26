@@ -116,6 +116,6 @@ app.put('/usuario/:idUsuario', async (req, res) => {
 
 // 5. LIGAR O SERVIDOR (Sempre no final do arquivo!)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
