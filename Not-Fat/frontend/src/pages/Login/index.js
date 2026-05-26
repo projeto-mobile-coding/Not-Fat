@@ -9,9 +9,18 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { styles, AVATAR_SIZE } from "./style";
+<<<<<<< Updated upstream
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 
+=======
+import {GoogleSignin, user, isSuccessResponse } from "@react-native-google-signin/google-signin";
+
+GoogleSignin.configure({
+  androidClientId:
+    "423858196834-oji572gtcqs97sl8cu6hlk4qinkbr9um.apps.googleusercontent.com",
+});
+>>>>>>> Stashed changes
 
 const GoogleIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -48,6 +57,20 @@ const CheckIcon = () => (
 
 export default function LoginScreen({ onLogin }) {
   const [remindMe, setRemindMe] = useState(true);
+  const [auth, setAuth] = useState<user | null>(null);
+
+  async function handleGoogleSignIn() {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if(isSuccessResponse(response)) {
+        cosole.log(response.data);
+      }
+    } catch (error) {
+      console.error("Google Sign-In error:", error);
+    }
+  }
 
   async function enviarTokenParaBackend(idToken: string | null) {
     if (!idToken) return;
@@ -124,7 +147,7 @@ export default function LoginScreen({ onLogin }) {
         <View style={{ height: 40 }} />
 
         <TouchableOpacity
-          onPress={onLogin}
+          onPress={handleGoogleSignIn}
           activeOpacity={0.85}
           style={styles.googleButton}
         >
