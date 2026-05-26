@@ -43,10 +43,15 @@ app.post('/login', async (req, res) => {
 // Rota 3: ADICIONAR ALIMENTO NA REFEIÇÃO
 app.post('/adicionar', async (req, res) => {
     try {
-        const { idUsuario, idRefeicao, idAlimento } = req.body;
-        const sql = 'INSERT INTO refeicao_usuario (usuario, refeicao, alimento) VALUES (?, ?, ?)';
+        // 1. Recebe a quantidade do Front-End (ou do Thunder Client)
+        const { idUsuario, idRefeicao, idAlimento, quantidade } = req.body;
         
-        await pool.query(sql, [idUsuario, idRefeicao, idAlimento]);
+        // 2. Adiciona a coluna e o ponto de interrogação na query
+        const sql = 'INSERT INTO refeicao_usuario (usuario, refeicao, alimento, quantidade) VALUES (?, ?, ?, ?)';
+        
+        // 3. Passa a variável quantidade para o banco de dados
+        await pool.query(sql, [idUsuario, idRefeicao, idAlimento, quantidade]);
+        
         return res.json({ mensagem: "Adicionado com sucesso!" });
 
     } catch (err) {
@@ -73,7 +78,8 @@ app.get('/refeicao/:idUsuario/:idRefeicao', async (req, res) => {
         const sql = `
             SELECT 
                 a.id AS id_alimento,
-                a.nome AS nome_alimento
+                a.nome AS nome_alimento,
+                ru.quantidade AS quantidade
             FROM refeicao_usuario ru
             INNER JOIN alimento a ON ru.alimento = a.id
             WHERE ru.usuario = ? AND ru.refeicao = ?;
