@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   centeredView: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
