@@ -4,11 +4,17 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import { styles, AVATAR_SIZE } from "./style";
+import { styles } from "./style";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+
+GoogleSignin.configure({
+  webClientId: '423858196834-s6hf7ij8s5cbi9ri401bqa40ojvjkq89.apps.googleusercontent.com',
+  offlineAccess: true,
+});
 
 const GoogleIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -45,6 +51,67 @@ const CheckIcon = () => (
 
 export default function LoginScreen({ onLogin }) {
   const [remindMe, setRemindMe] = useState(true);
+  const [auth, setAuth] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // MUDANÇA 1: A função agora recebe nome_completo e email enviados pelo Google
+  async function enviarTokenParaBackend(nome_completo, email) {
+    try {
+      // MUDANÇA 2: Alterado a rota para coincidir com o 'app.post("/login")' do back-end
+      const response = await fetch('http://10.0.2.2:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // MUDANÇA 3: Enviando o objeto com as chaves exatas que o banco de dados espera
+        body: JSON.stringify({ 
+          nome_completo: nome_completo, 
+          email: email 
+        }),
+      });
+
+      const dadosDoBackend = await response.json();
+
+      if (response.ok) {
+        console.log("Autenticado no Back-end com sucesso!", dadosDoBackend);
+        if (onLogin) onLogin(dadosDoBackend); 
+      } else {
+        console.error("Erro retornado pelo Back-end:", dadosDoBackend.erro || dadosDoBackend.message);
+      }
+    } catch (error) {
+      console.error("Erro ao conectar com o Back-end:", error);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      
+      // MUDANÇA 4: Extraindo nome e email de dentro do objeto retornado pelo Google
+      if (response && response.data && response.data.user) {
+        setAuth(response.data);
+        
+        const { name, email } = response.data.user;
+        
+        // Dispara os dados para salvar no banco
+        await enviarTokenParaBackend(name, email);
+      }
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log("O usuário cancelou o fluxo de login.");
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log("O login já está em andamento.");
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log("Play Services não está disponível ou está desatualizado.");
+      } else {
+        console.log("Erro na autenticação:", error.message || error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -67,12 +134,15 @@ export default function LoginScreen({ onLogin }) {
         <View style={{ height: 40 }} />
 
         <TouchableOpacity
-          onPress={onLogin}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
           activeOpacity={0.85}
-          style={styles.googleButton}
+          style={[styles.googleButton, loading && { opacity: 0.6 }]}
         >
           <GoogleIcon />
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
+          <Text style={styles.googleButtonText}>
+            {loading ? "Connecting..." : "Continue with Google"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
