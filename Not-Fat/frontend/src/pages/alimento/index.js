@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,147 +14,160 @@ import {
 
 import { styles } from "./style";
 
-const versoes = {
-  "Café da manhã": {
-    subTitle: "Lista do café da manhã",
-    alimentos: [
-      { nome: "Pão", descricao: "1 unidade" },
-      { nome: "Ovo", descricao: "1 unidade" },
-      { nome: "Café", descricao: "1 xícara" },
-      { nome: "Frutas", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Pão francês", descricao: "1 unidade" },
-      { nome: "Ovo cozido", descricao: "1 unidade" },
-      { nome: "Café preto", descricao: "1 xícara" },
-      { nome: "Aveia", descricao: "1 porção" },
-      { nome: "Arroz branco", descricao: "1 porção" },
-    ],
-  },
-  Desjejum: {
-    subTitle: "Lista de itens do desjejum",
-    alimentos: [
-      { nome: "Iogurte", descricao: "1 pote" },
-      { nome: "Granola", descricao: "2 colheres" },
-      { nome: "Banana", descricao: "1 unidade" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Iogurte natural", descricao: "1 pote" },
-      { nome: "Granola integral", descricao: "1 porção" },
-      { nome: "Banana prata", descricao: "1 unidade" },
-      { nome: "Muesli", descricao: "1 porção" },
-    ],
-  },
-  Almoço: {
-    subTitle: "Lista do almoço",
-    alimentos: [
-      { nome: "Arroz", descricao: "1 concha" },
-      { nome: "Feijão", descricao: "1 concha" },
-      { nome: "Carne", descricao: "1 porção" },
-      { nome: "Salada", descricao: "1 prato" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Arroz branco", descricao: "1 porção" },
-      { nome: "Feijão carioca", descricao: "1 porção" },
-      { nome: "Frango grelhado", descricao: "1 porção" },
-      { nome: "Salada verde", descricao: "1 prato" },
-    ],
-  },
-  "lanche da tarde": {
-    subTitle: "Lista do lanche da tarde",
-    alimentos: [
-      { nome: "Biscoito", descricao: "3 unidades" },
-      { nome: "Suco", descricao: "1 copo" },
-      { nome: "Queijo", descricao: "1 fatia" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Biscoito cream cracker", descricao: "1 unidade" },
-      { nome: "Suco de laranja", descricao: "1 copo" },
-      { nome: "Queijo minas", descricao: "1 fatia" },
-      { nome: "Castanha", descricao: "1 porção" },
-    ],
-  },
-  Jantar: {
-    subTitle: "Lista do jantar",
-    alimentos: [
-      { nome: "Macarrão", descricao: "1 porção" },
-      { nome: "Tomate", descricao: "1 unidade" },
-      { nome: "Peixe", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Macarrão integral", descricao: "1 porção" },
-      { nome: "Tomate cereja", descricao: "1 unidade" },
-      { nome: "Peixe assado", descricao: "1 porção" },
-      { nome: "Brócolis", descricao: "1 porção" },
-    ],
-  },
-  Ceia: {
-    subTitle: "Lista da ceia",
-    alimentos: [
-      { nome: "Chá", descricao: "1 xícara" },
-      { nome: "Pão integral", descricao: "1 fatia" },
-      { nome: "Frutas", descricao: "1 porção" },
-    ],
-    alimentosDisponiveis: [
-      { nome: "Chá verde", descricao: "1 xícara" },
-      { nome: "Pão integral", descricao: "1 fatia" },
-      { nome: "Maçã", descricao: "1 unidade" },
-      { nome: "Mel", descricao: "1 colher" },
-    ],
-  },
+const API_BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000";
+
+const refeicaoIds = {
+  Desjejum: 1,
+  "Café da manhã": 2,
+  Almoço: 3,
+  "lanche da tarde": 4,
+  Jantar: 5,
+  Ceia: 6,
 };
 
-export default function Alimento({ navigation, route }) {
+async function parseJsonResponse(response) {
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Resposta inválida do servidor: ${text}`);
+  }
+}
+
+export default function Alimento({ navigation, route, user }) {
   const refeicao = route.params?.refeicao || "Café da manhã";
-  const conteudo = versoes[refeicao] || versoes["Café da manhã"];
+  const idRefeicao = route.params?.idRefeicao ?? refeicaoIds[refeicao] ?? 1;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
-  const [alimentosSelecionados, setAlimentosSelecionados] = useState(
-    (versoes[refeicao]?.alimentos || versoes["Café da manhã"].alimentos).map(
-      (alimento) => ({ ...alimento, quantidade: 1 }),
-    ),
-  );
+  const [alimentosDisponiveis, setAlimentosDisponiveis] = useState([]);
+  const [salvos, setSalvos] = useState([]);
   const [pendentes, setPendentes] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setAlimentosSelecionados(
-      (versoes[refeicao]?.alimentos || versoes["Café da manhã"].alimentos).map(
-        (alimento) => ({ ...alimento, quantidade: 1 }),
-      ),
-    );
-    setPendentes({});
     setSearch("");
-  }, [refeicao]);
+    setPendentes({});
+    if (user?.idUsuario) {
+      carregarAlimentosDisponiveis();
+      carregarAlimentosSalvos();
+    }
+  }, [user, idRefeicao, refeicao]);
+
+  async function carregarAlimentosDisponiveis() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/alimentos`);
+      const data = await parseJsonResponse(response);
+
+      if (!response.ok) {
+        throw new Error(data.erro || "Não foi possível carregar os alimentos.");
+      }
+
+      const lista = data.map((item) => ({
+        id: item.id,
+        nome: item.nome,
+        descricao: item.descricao || "",
+      }));
+
+      setAlimentosDisponiveis(lista);
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível carregar os alimentos do servidor.");
+      setAlimentosDisponiveis([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function carregarAlimentosSalvos() {
+    if (!user?.idUsuario) {
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/refeicao/${user.idUsuario}/${idRefeicao}`);
+      const data = await parseJsonResponse(response);
+
+      if (!response.ok) {
+        throw new Error(data.erro || "Não foi possível buscar os alimentos salvos.");
+      }
+
+      const listaSalvos = data.map((item) => ({
+        id: item.id_alimento,
+        nome: item.nome_alimento,
+        descricao: item.descricao || "",
+        quantidade: Number(item.quantidade) || 1,
+      }));
+
+      setSalvos(listaSalvos);
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível buscar os alimentos salvos.");
+      setSalvos([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function removerAlimentoSalvo(idAlimento) {
+    if (!user?.idUsuario) {
+      setError("Usuário não identificado.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/refeicao/${user.idUsuario}/${idRefeicao}/${idAlimento}`,
+        { method: "DELETE" },
+      );
+
+      const data = await parseJsonResponse(response);
+      if (!response.ok) {
+        throw new Error(data.erro || "Não foi possível remover o alimento.");
+      }
+
+      await carregarAlimentosSalvos();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Erro ao remover alimento.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function incrementarQuantidade(alimento) {
     setPendentes((prev) => ({
       ...prev,
-      [alimento.nome]: (prev[alimento.nome] || 0) + 1,
+      [alimento.id]: (prev[alimento.id] || 0) + 1,
     }));
   }
 
   function diminuirQuantidade(alimento) {
     setPendentes((prev) => {
-      const quantidadeAtual = prev[alimento.nome] || 0;
+      const quantidadeAtual = prev[alimento.id] || 0;
 
       if (quantidadeAtual <= 1) {
         const novoPendentes = { ...prev };
-        delete novoPendentes[alimento.nome];
+        delete novoPendentes[alimento.id];
         return novoPendentes;
       }
 
       return {
         ...prev,
-        [alimento.nome]: quantidadeAtual - 1,
+        [alimento.id]: quantidadeAtual - 1,
       };
     });
-  }
-
-  function removerAlimento(alimento) {
-    setAlimentosSelecionados((prev) =>
-      prev.filter((item) => item.nome !== alimento.nome),
-    );
   }
 
   function fecharModal() {
@@ -162,39 +176,62 @@ export default function Alimento({ navigation, route }) {
     setPendentes({});
   }
 
-  function confirmarAdicao() {
-    setAlimentosSelecionados((prev) => {
-      const selecionados = [...prev];
+  async function confirmarAdicao() {
+    if (!user?.idUsuario) {
+      setError("Usuário não identificado.");
+      return;
+    }
 
-      Object.entries(pendentes).forEach(([nome, quantidade]) => {
-        const alimento = conteudo.alimentosDisponiveis.find(
-          (item) => item.nome === nome,
-        );
+    const itens = Object.entries(pendentes)
+      .map(([id, quantidade]) => ({
+        idAlimento: Number(id),
+        quantidade: Number(quantidade),
+      }))
+      .filter((item) => item.idAlimento > 0 && item.quantidade > 0);
 
-        if (!alimento || quantidade <= 0) {
-          return;
+    if (itens.length === 0) {
+      fecharModal();
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const requests = itens.map((item) =>
+        fetch(`${API_BASE_URL}/adicionar`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idUsuario: user.idUsuario,
+            idRefeicao,
+            idAlimento: item.idAlimento,
+            quantidade: item.quantidade,
+          }),
+        }),
+      );
+
+      const responses = await Promise.all(requests);
+      for (const response of responses) {
+        if (!response.ok) {
+          const data = await parseJsonResponse(response);
+          throw new Error(data.erro || "Erro ao salvar alimentos.");
         }
+      }
 
-        const existente = selecionados.find((item) => item.nome === nome);
-
-        if (existente) {
-          existente.quantidade += quantidade;
-          return;
-        }
-
-        selecionados.push({
-          ...alimento,
-          quantidade,
-        });
-      });
-
-      return selecionados;
-    });
-
-    fecharModal();
+      await carregarAlimentosSalvos();
+      fecharModal();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Erro ao salvar alimentos.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const alimentosFiltrados = conteudo.alimentosDisponiveis.filter((alimento) =>
+  const alimentosFiltrados = alimentosDisponiveis.filter((alimento) =>
     alimento.nome.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -217,7 +254,7 @@ export default function Alimento({ navigation, route }) {
 
             <View>
               <Text style={styles.title}>{refeicao}</Text>
-              <Text style={styles.subTitle}>{conteudo.subTitle}</Text>
+              <Text style={styles.subTitle}>Alimentos cadastrados no banco</Text>
             </View>
           </View>
 
@@ -229,8 +266,8 @@ export default function Alimento({ navigation, route }) {
           </TouchableOpacity>
 
           <View style={styles.list}>
-            {alimentosSelecionados.map((alimento) => (
-              <View style={styles.card} key={alimento.nome}>
+            {salvos.map((alimento) => (
+              <View style={styles.card} key={`${alimento.id}-${alimento.nome}`}>
                 <View>
                   <Text style={styles.foodName}>{alimento.nome}</Text>
                   <Text style={styles.foodDescription}>
@@ -240,16 +277,16 @@ export default function Alimento({ navigation, route }) {
 
                 <TouchableOpacity
                   style={styles.removeButton}
-                  onPress={() => removerAlimento(alimento)}
+                  onPress={() => removerAlimentoSalvo(alimento.id)}
                 >
-                  <Text style={styles.removeButtonText}>Excluir</Text>
+                  <Text style={styles.removeButtonText}>Apagar</Text>
                 </TouchableOpacity>
               </View>
             ))}
 
-            {alimentosSelecionados.length === 0 && (
+            {salvos.length === 0 && (
               <Text style={styles.emptyText}>
-                Nenhum alimento selecionado ainda.
+                Nenhum alimento salvo para esta refeição ainda.
               </Text>
             )}
           </View>
@@ -302,7 +339,7 @@ export default function Alimento({ navigation, route }) {
                     </TouchableOpacity>
 
                     <Text style={styles.quantityText}>
-                      x{pendentes[alimento.nome] || 0}
+                      x{pendentes[alimento.id] || 0}
                     </Text>
 
                     <TouchableOpacity
@@ -312,6 +349,7 @@ export default function Alimento({ navigation, route }) {
                       <Text style={styles.plusButtonText}>+</Text>
                     </TouchableOpacity>
                   </View>
+
                 </View>
               ))}
 

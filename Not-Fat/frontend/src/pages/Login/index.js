@@ -5,11 +5,14 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { styles } from "./style";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+
+const API_BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000";
 
 GoogleSignin.configure({
   webClientId: '423858196834-s6hf7ij8s5cbi9ri401bqa40ojvjkq89.apps.googleusercontent.com',
@@ -53,33 +56,53 @@ export default function LoginScreen({ onLogin }) {
   const [remindMe, setRemindMe] = useState(true);
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  async function parseJsonResponse(response) {
+    const text = await response.text();
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      console.error("Resposta inválida do servidor (não é JSON):", text);
+      throw new Error(`Resposta inválida do servidor: ${text}`);
+    }
+  }
 
   // MUDANÇA 1: A função agora recebe nome_completo e email enviados pelo Google
   async function enviarTokenParaBackend(nome_completo, email) {
     try {
       // MUDANÇA 2: Alterado a rota para coincidir com o 'app.post("/login")' do back-end
-      const response = await fetch('http://10.0.2.2:3000/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         // MUDANÇA 3: Enviando o objeto com as chaves exatas que o banco de dados espera
-        body: JSON.stringify({ 
-          nome_completo: nome_completo, 
-          email: email 
+        body: JSON.stringify({
+          nome_completo: nome_completo,
+          email: email
         }),
       });
 
-      const dadosDoBackend = await response.json();
+      const dadosDoBackend = await parseJsonResponse(response);
 
       if (response.ok) {
+        setLoginError("");
         console.log("Autenticado no Back-end com sucesso!", dadosDoBackend);
-        if (onLogin) onLogin(dadosDoBackend); 
+        if (onLogin) {
+          onLogin({
+            idUsuario: dadosDoBackend.idUsuario,
+            nomeCompleto: dadosDoBackend.nome_completo || nome_completo,
+            email: dadosDoBackend.email || email,
+          });
+        }
       } else {
         console.error("Erro retornado pelo Back-end:", dadosDoBackend.erro || dadosDoBackend.message);
+        setLoginError("Não foi possível concluir o login. Tente novamente mais tarde.");
       }
     } catch (error) {
       console.error("Erro ao conectar com o Back-end:", error);
+      setLoginError("Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.");
     }
   }
 
@@ -88,16 +111,18 @@ export default function LoginScreen({ onLogin }) {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-      
-      // MUDANÇA 4: Extraindo nome e email de dentro do objeto retornado pelo Google
-      if (response && response.data && response.data.user) {
-        setAuth(response.data);
-        
-        const { name, email } = response.data.user;
-        
-        // Dispara os dados para salvar no banco
-        await enviarTokenParaBackend(name, email);
+
+      const googleUser = response?.user || response?.data?.user;
+      if (!googleUser) {
+        console.log("Retorno do Google Sign-In inesperado:", response);
+        return;
       }
+
+      setAuth(googleUser);
+      const { name, email } = googleUser;
+
+      // Dispara os dados para salvar no banco
+      await enviarTokenParaBackend(name, email);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log("O usuário cancelou o fluxo de login.");
@@ -141,9 +166,11 @@ export default function LoginScreen({ onLogin }) {
         >
           <GoogleIcon />
           <Text style={styles.googleButtonText}>
-            {loading ? "Connecting..." : "Continue with Google"}
+            {loading ? "Conectando..." : "Continuar com Google"}
           </Text>
         </TouchableOpacity>
+
+        {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
 
         <TouchableOpacity
           onPress={() => setRemindMe(!remindMe)}

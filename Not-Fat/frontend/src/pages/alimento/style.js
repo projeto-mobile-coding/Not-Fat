@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
   },
 
   foodDescription: {
-    fontSize: 13,
+    fontSize: 15,
     color: colors.textSecondary,
     marginTop: 4,
   },
@@ -172,6 +172,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     marginBottom: 15,
+
   },
 
   modalList: {

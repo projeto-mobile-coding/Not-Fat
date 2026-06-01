@@ -16,6 +16,7 @@ export default function Refeicao({ navigation }) {
   function irParaAlimentos(refeicao) {
     navigation.navigate("Alimento", {
       refeicao: refeicao.nome,
+      idRefeicao: refeicao.id,
     });
   }
 

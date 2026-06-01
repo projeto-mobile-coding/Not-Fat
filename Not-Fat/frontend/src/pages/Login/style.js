@@ -81,4 +81,11 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: "#444",
   },
+  errorText: {
+    marginTop: 16,
+    color: "#b91c1c",
+    fontSize: 14,
+    textAlign: "center",
+    paddingHorizontal: 12,
+  },
 });

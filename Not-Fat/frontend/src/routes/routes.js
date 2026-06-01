@@ -15,7 +15,7 @@ import { styles } from "./style";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function Tabs() {
+function Tabs({ user }) {
   return (
     <Tab.Navigator
       style={styles.screenOptions}
@@ -103,7 +103,6 @@ function Tabs() {
 
       <Tab.Screen
         name="Perfil"
-        component={Perfil}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
@@ -140,16 +139,22 @@ function Tabs() {
             );
           },
         }}
-      />
+      >
+        {props => <Perfil {...props} user={user} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
-export function Routes() {
+export function Routes({ user }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Tabs" component={Tabs} />
-      <Stack.Screen name="Alimento" component={Alimento} />
+      <Stack.Screen name="Tabs">
+        {props => <Tabs {...props} user={user} />}
+      </Stack.Screen>
+      <Stack.Screen name="Alimento">
+        {props => <Alimento {...props} user={user} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

@@ -1,22 +1,18 @@
 import { useState } from "react";
 import LoginScreen from "./frontend/src/pages/Login";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Routes } from "./frontend/src/routes/routes";
 import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
-  // return (
-  //   <NavigationContainer>
-  //     <Routes />
-  //   </NavigationContainer>
-  // );
-  const [logado, setLogado] = useState(false);
-  if (!logado) {
-    return <LoginScreen onLogin={() => setLogado(true)} />;
+  const [user, setUser] = useState(null);
+
+  if (!user) {
+    return <LoginScreen onLogin={setUser} />;
   }
+
   return (
     <NavigationContainer>
-      <Routes />
+      <Routes user={user} />
     </NavigationContainer>
   );
 }
