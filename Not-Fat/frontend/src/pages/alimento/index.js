@@ -11,6 +11,7 @@ import {
   Modal,
   TextInput,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { styles } from "./style";
 
@@ -24,6 +25,45 @@ const refeicaoIds = {
   Jantar: 5,
   Ceia: 6,
 };
+
+// Funções de persistência local
+async function salvarAlimentosLocalmente(idUsuario, idRefeicao, alimentos) {
+  try {
+    const chave = `alimentos_${idUsuario}_${idRefeicao}`;
+    await AsyncStorage.setItem(chave, JSON.stringify(alimentos));
+  } catch (err) {
+    console.error("Erro ao salvar alimentos localmente:", err);
+  }
+}
+
+async function carregarAlimentosLocalmente(idUsuario, idRefeicao) {
+  try {
+    const chave = `alimentos_${idUsuario}_${idRefeicao}`;
+    const dados = await AsyncStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : [];
+  } catch (err) {
+    console.error("Erro ao carregar alimentos localmente:", err);
+    return [];
+  }
+}
+
+async function salvarAlimentosDisponiveisLocalmente(alimentos) {
+  try {
+    await AsyncStorage.setItem("alimentos_disponiveis", JSON.stringify(alimentos));
+  } catch (err) {
+    console.error("Erro ao salvar alimentos disponíveis:", err);
+  }
+}
+
+async function carregarAlimentosDisponiveisLocalmente() {
+  try {
+    const dados = await AsyncStorage.getItem("alimentos_disponiveis");
+    return dados ? JSON.parse(dados) : [];
+  } catch (err) {
+    console.error("Erro ao carregar alimentos disponíveis:", err);
+    return [];
+  }
+}
 
 async function parseJsonResponse(response) {
   const text = await response.text();
@@ -51,10 +91,31 @@ export default function Alimento({ navigation, route, user }) {
     setSearch("");
     setPendentes({});
     if (user?.idUsuario) {
-      carregarAlimentosDisponiveis();
-      carregarAlimentosSalvos();
+      carregarDados();
     }
   }, [user, idRefeicao, refeicao]);
+
+  async function carregarDados() {
+    // Carregar dados locais primeiro (mais rápido)
+    const alimentosLocais = await carregarAlimentosLocalmente(user.idUsuario, idRefeicao);
+    const alimentosDisponiveisLocais = await carregarAlimentosDisponiveisLocalmente();
+
+    if (alimentosDisponiveisLocais.length > 0) {
+      setAlimentosDisponiveis(alimentosDisponiveisLocais);
+    }
+
+    if (alimentosLocais.length > 0) {
+      setSalvos(alimentosLocais);
+    }
+
+    // Sincronizar com servidor em background
+    try {
+      await carregarAlimentosDisponiveis();
+      await carregarAlimentosSalvos();
+    } catch (err) {
+      console.error("Erro ao sincronizar com servidor:", err);
+    }
+  }
 
   async function carregarAlimentosDisponiveis() {
     setLoading(true);
@@ -75,6 +136,8 @@ export default function Alimento({ navigation, route, user }) {
       }));
 
       setAlimentosDisponiveis(lista);
+      // Salvar no AsyncStorage para uso offline
+      await salvarAlimentosDisponiveisLocalmente(lista);
     } catch (err) {
       console.error(err);
       setError("Não foi possível carregar os alimentos do servidor.");
@@ -108,6 +171,8 @@ export default function Alimento({ navigation, route, user }) {
       }));
 
       setSalvos(listaSalvos);
+      // Salvar no AsyncStorage para uso offline
+      await salvarAlimentosLocalmente(user.idUsuario, idRefeicao, listaSalvos);
     } catch (err) {
       console.error(err);
       setError("Não foi possível buscar os alimentos salvos.");
@@ -137,10 +202,17 @@ export default function Alimento({ navigation, route, user }) {
         throw new Error(data.erro || "Não foi possível remover o alimento.");
       }
 
-      await carregarAlimentosSalvos();
+      // Remover do estado local também
+      const alimentosAtualizados = salvos.filter((item) => item.id !== idAlimento);
+      setSalvos(alimentosAtualizados);
+
+      // Atualizar no AsyncStorage
+      await salvarAlimentosLocalmente(user.idUsuario, idRefeicao, alimentosAtualizados);
     } catch (err) {
       console.error(err);
       setError(err.message || "Erro ao remover alimento.");
+      // Sincronizar novamente em caso de erro
+      await carregarAlimentosSalvos();
     } finally {
       setLoading(false);
     }
