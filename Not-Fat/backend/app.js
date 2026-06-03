@@ -11,11 +11,11 @@ app.use(express.json());
 
 // 1. CONEXÃO COM O BANCO DE DADOS
 const pool = mysql.createPool({
-    host: process.env.db_host,
-    port: process.env.db_port,
-    user: process.env.db_user,
-    password: process.env.db_password,
-    database: process.env.db_database,
+    host: process.env.DB_HOST || process.env.db_host,
+    port: process.env.DB_PORT || process.env.db_port || 3306,
+    user: process.env.DB_USER || process.env.db_user,
+    password: process.env.DB_PASSWORD || process.env.db_password,
+    database: process.env.DB_DATABASE || process.env.db_database,
     ssl: {
         ca: process.env.DB_SSL_CA,
         rejectUnauthorized: false
