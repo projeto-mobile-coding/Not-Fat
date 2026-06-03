@@ -24,6 +24,9 @@ export default function ModalPerfil({
       transparent={true}
       visible={visible}
       onRequestClose={fecharModal}
+      accessible={true}
+      accessibilityLabel="Modal para editar nome completo"
+      accessibilityHint="Use este formulário para alterar o nome exibido no perfil."
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
@@ -42,17 +45,28 @@ export default function ModalPerfil({
               placeholderTextColor="#888"
               onChangeText={onChangeNome}
               value={nomeCompleto}
+              accessible={true}
+              accessibilityLabel="Campo de nome completo"
+              accessibilityHint="Digite o nome que deve aparecer no seu perfil."
             />
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.buttonCancel}
                 onPress={fecharModal}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel="Cancelar edição"
+                accessibilityHint="Fecha o modal sem salvar as alterações."
               >
                 <Text style={styles.buttonCancelText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonSave}
                 onPress={handleSave}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel="Salvar nome completo"
+                accessibilityHint="Salva o nome digitado e fecha a edição."
               >
                 <Text style={styles.buttonSaveText}>Salvar</Text>
               </TouchableOpacity>

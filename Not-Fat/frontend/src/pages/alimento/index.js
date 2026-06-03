@@ -320,6 +320,10 @@ export default function Alimento({ navigation, route, user }) {
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => navigation.goBack()}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Voltar para a tela anterior"
+              accessibilityHint="Retorna à tela de refeições."
             >
               <Text style={styles.backButtonText}>‹</Text>
             </TouchableOpacity>
@@ -333,6 +337,10 @@ export default function Alimento({ navigation, route, user }) {
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Adicionar alimentos"
+            accessibilityHint="Abre o modal para selecionar alimentos para esta refeição."
           >
             <Text style={styles.addButtonText}>+ Alimentos</Text>
           </TouchableOpacity>
@@ -350,6 +358,10 @@ export default function Alimento({ navigation, route, user }) {
                 <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => removerAlimentoSalvo(alimento.id)}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Apagar ${alimento.nome}`}
+                  accessibilityHint={`Remove ${alimento.nome} da refeição atual.`}
                 >
                   <Text style={styles.removeButtonText}>Apagar</Text>
                 </TouchableOpacity>
@@ -379,6 +391,10 @@ export default function Alimento({ navigation, route, user }) {
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={fecharModal}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel="Fechar modal de alimentos"
+                accessibilityHint="Fecha a janela de seleção de alimentos sem salvar alterações."
               >
                 <Text style={styles.closeButtonText}>×</Text>
               </TouchableOpacity>
@@ -390,6 +406,9 @@ export default function Alimento({ navigation, route, user }) {
               placeholderTextColor="#999"
               value={search}
               onChangeText={setSearch}
+              accessible={true}
+              accessibilityLabel="Campo de busca de alimentos"
+              accessibilityHint="Digite o nome do alimento que deseja adicionar."
             />
 
             <ScrollView style={styles.modalList}>
@@ -406,6 +425,10 @@ export default function Alimento({ navigation, route, user }) {
                     <TouchableOpacity
                       style={styles.minusButton}
                       onPress={() => diminuirQuantidade(alimento)}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Diminuir quantidade de ${alimento.nome}`}
+                      accessibilityHint={`Reduz a quantidade de ${alimento.nome} para adicionar.`}
                     >
                       <Text style={styles.minusButtonText}>-</Text>
                     </TouchableOpacity>
@@ -417,6 +440,10 @@ export default function Alimento({ navigation, route, user }) {
                     <TouchableOpacity
                       style={styles.plusButton}
                       onPress={() => incrementarQuantidade(alimento)}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Aumentar quantidade de ${alimento.nome}`}
+                      accessibilityHint={`Aumenta a quantidade de ${alimento.nome} para adicionar.`}
                     >
                       <Text style={styles.plusButtonText}>+</Text>
                     </TouchableOpacity>
@@ -435,11 +462,21 @@ export default function Alimento({ navigation, route, user }) {
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={confirmarAdicao}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Confirmar adição dos alimentos"
+              accessibilityHint="Adiciona os alimentos selecionados à refeição atual."
             >
               <Text style={styles.confirmButtonText}>Adicionar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={fecharModal}>
+            <TouchableOpacity
+              onPress={fecharModal}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Cancelar adição de alimentos"
+              accessibilityHint="Fecha o modal sem salvar as alterações."
+            >
               <Text style={styles.cancelText}>Cancelar</Text>
             </TouchableOpacity>
           </View>

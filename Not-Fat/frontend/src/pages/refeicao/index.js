@@ -38,6 +38,8 @@ export default function Refeicao({ navigation }) {
                   variant="primary"
                   key={refeicao.nome}
                   onPress={() => irParaAlimentos(refeicao)}
+                  accessibilityLabel={`Abrir refeição ${refeicao.nome}`}
+                  accessibilityHint={`Navega para a lista de alimentos da refeição ${refeicao.nome}.`}
                 >
                   {refeicao.nome}
                 </Botao>

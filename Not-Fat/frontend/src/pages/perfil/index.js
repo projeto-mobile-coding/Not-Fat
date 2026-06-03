@@ -97,6 +97,9 @@ export default function Perfil({ user }) {
               <Image
                 source={require("../../assets/images/splash-logo.png")}
                 style={styles.profileImage}
+                accessible={true}
+                accessibilityLabel="Foto de perfil do usuário"
+                accessibilityHint="Imagem de perfil exibida na tela de dados pessoais."
               />
               <Text style={styles.title}>{nomeCompleto || "Seu nome aqui"}</Text>
             </View>
@@ -110,7 +113,13 @@ export default function Perfil({ user }) {
                   <Text style={styles.subTitle}>Nome Completo</Text>
                   <Text style={styles.text}>{nomeCompleto || "Não cadastrado"}</Text>
                 </View>
-                <TouchableOpacity onPress={abrirModal}>
+                <TouchableOpacity
+                  onPress={abrirModal}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Editar nome completo"
+                  accessibilityHint="Abre o formulário para alterar o nome exibido no perfil."
+                >
                   <EvilIcons name="pencil" style={styles.icon} />
                 </TouchableOpacity>
               </View>

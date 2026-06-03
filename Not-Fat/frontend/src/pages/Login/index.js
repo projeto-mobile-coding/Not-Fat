@@ -12,7 +12,7 @@ import Svg, { Path } from "react-native-svg";
 import { styles } from "./style";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
-const API_BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000";
+const API_BASE_URL = "https://not-fat-x751.onrender.com";
 
 GoogleSignin.configure({
   webClientId: '423858196834-s6hf7ij8s5cbi9ri401bqa40ojvjkq89.apps.googleusercontent.com',
@@ -131,7 +131,7 @@ export default function LoginScreen({ onLogin }) {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         console.log("Play Services não está disponível ou está desatualizado.");
       } else {
-        console.log("Erro na autenticação:", error.message || error);
+        console.log("Erro na autenticação:", error.code, error.message || error);
       }
     } finally {
       setLoading(false);
@@ -144,7 +144,12 @@ export default function LoginScreen({ onLogin }) {
 
       <View style={styles.header}>
         <View />
-        <TouchableOpacity>
+        <TouchableOpacity
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Ajuda"
+          accessibilityHint="Abre informações de suporte para o aplicativo."
+        >
           <Text style={styles.helpText}>Help</Text>
         </TouchableOpacity>
       </View>
@@ -154,6 +159,9 @@ export default function LoginScreen({ onLogin }) {
           style={styles.avatarImage}
           resizeMode="cover"
           source={require("../../assets/images/splash-logo.png")}
+          accessible={true}
+          accessibilityLabel="Logo do aplicativo Not Fat"
+          accessibilityHint="Imagem principal da tela de login."
         />
 
         <View style={{ height: 40 }} />
@@ -163,6 +171,10 @@ export default function LoginScreen({ onLogin }) {
           disabled={loading}
           activeOpacity={0.85}
           style={[styles.googleButton, loading && { opacity: 0.6 }]}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Continuar com Google"
+          accessibilityHint={loading ? "Aguarde enquanto o login é iniciado." : "Inicia o login com sua conta Google."}
         >
           <GoogleIcon />
           <Text style={styles.googleButtonText}>
@@ -176,6 +188,11 @@ export default function LoginScreen({ onLogin }) {
           onPress={() => setRemindMe(!remindMe)}
           style={styles.remindRow}
           activeOpacity={0.7}
+          accessible={true}
+          accessibilityRole="checkbox"
+          accessibilityLabel="Lembrar login"
+          accessibilityHint={remindMe ? "Desmarque para não lembrar o login." : "Marque para lembrar o login."}
+          accessibilityState={{ checked: remindMe }}
         >
           <View
             style={[
